@@ -9,11 +9,13 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+
+    "icon": "./Images/Shuffle.gif",
+
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./Images/Shuffle.gif",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#E8E8E8"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
