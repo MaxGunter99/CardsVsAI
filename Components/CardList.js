@@ -1,100 +1,323 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+// Sorted card deck
+const SortedDeck = [
 
-// Styles
-import styles from '../Styles/GameListStyles';
+    // Spades
+    {
+        icon: '🂡',
+        number: 'Ace',
+        suit: 'Spades'
+    },
 
-export default class cardList extends Component {
-    
-    render() {
+    {
+        icon: '🂢',
+        number: '2',
+        suit: 'Spades'
+    },
 
-        return (
-    
-            <ScrollView>
+    {
+        icon: '🂣',
+        number: '3',
+        suit: 'Spades'
+    },
 
-                <View style = { styles.container }>
+    {
+        icon: '🂤',
+        number: '4',
+        suit: 'Spades'
+    },
 
-                    <Text style = { styles.title }>Spades</Text>
+    {
+        icon: '🂥',
+        number: '5',
+        suit: 'Spades'
+    },
 
-                    <Text style = { styles.card }>🂠</Text>
-                    <Text style = { styles.card }>🂡</Text>
-                    <Text style = { styles.card }>🂢</Text>
-                    <Text style = { styles.card }>🂣</Text>
-                    <Text style = { styles.card }>🂤</Text>
-                    <Text style = { styles.card }>🂥</Text>
-                    <Text style = { styles.card }>🂦</Text>
-                    <Text style = { styles.card }>🂧</Text>
-                    <Text style = { styles.card }>🂨</Text>
-                    <Text style = { styles.card }>🂩</Text>
-                    <Text style = { styles.card }>🂪</Text>
-                    <Text style = { styles.card }>🂫</Text>
-                    <Text style = { styles.card }>🂭</Text>
-                    <Text style = { styles.card }>🂮</Text>
+    {
+        icon: '🂦',
+        number: '6',
+        suit: 'Spades'
+    },
 
-                </View>
+    {
+        icon: '🂧',
+        number: '7',
+        suit: 'Spades'
+    },
 
-                <View style = { styles.container }>
+    {
+        icon: '🂨',
+        number: '8',
+        suit: 'Spades'
+    },
 
-                    <Text style = { styles.title }>Hearts</Text>
+    {
+        icon: '🂩',
+        number: '9',
+        suit: 'Spades'
+    },
 
-                    <Text style = { styles.card }>🂱</Text>
-                    <Text style = { styles.card }>🂲</Text>
-                    <Text style = { styles.card }>🂳</Text>
-                    <Text style = { styles.card }>🂴</Text>
-                    <Text style = { styles.card }>🂵</Text>
-                    <Text style = { styles.card }>🂶</Text>
-                    <Text style = { styles.card }>🂷</Text>
-                    <Text style = { styles.card }>🂸</Text>
-                    <Text style = { styles.card }>🂹</Text>
-                    <Text style = { styles.card }>🂺</Text>
-                    <Text style = { styles.card }>🂻</Text>
-                    <Text style = { styles.card }>🂽</Text>
-                    <Text style = { styles.card }>🂾</Text>
+    {
+        icon: '🂪',
+        number: '10',
+        suit: 'Spades'
+    },
 
-                </View>
+    {
+        icon: '🂫',
+        number: 'Jack',
+        suit: 'Spades'
+    },
 
-                <View style = { styles.container }>
+    {
+        icon: '🂭',
+        number: 'Queen',
+        suit: 'Spades'
+    },
 
-                    <Text style = { styles.title }>Diamonds</Text>
+    {
+        icon: '🂮',
+        number: 'King',
+        suit: 'Spades'
+    },
 
-                    <Text style = { styles.card }>🃁</Text>
-                    <Text style = { styles.card }>🃂</Text>
-                    <Text style = { styles.card }>🃃</Text>
-                    <Text style = { styles.card }>🃄</Text>
-                    <Text style = { styles.card }>🃅</Text>
-                    <Text style = { styles.card }>🃆</Text>
-                    <Text style = { styles.card }>🃇</Text>
-                    <Text style = { styles.card }>🃈</Text>
-                    <Text style = { styles.card }>🃉</Text>
-                    <Text style = { styles.card }>🃊</Text>
-                    <Text style = { styles.card }>🃋</Text>
-                    <Text style = { styles.card }>🃍</Text>
-                    <Text style = { styles.card }>🃎</Text>
+    // Hearts
+    {
+        icon: '🂱',
+        number: 'Ace',
+        suit: 'Hearts'
+    },
 
-                </View>
+    {
+        icon: '🂲',
+        number: '2',
+        suit: 'Hearts'
+    },
 
-                <View style = { styles.container }>
+    {
+        icon: '🂳',
+        number: '3',
+        suit: 'Hearts'
+    },
 
-                    <Text style = { styles.title }>Clubs</Text>
+    {
+        icon: '🂴',
+        number: '4',
+        suit: 'Hearts'
+    },
 
-                    <Text style = { styles.card }>🃑</Text>
-                    <Text style = { styles.card }>🃒</Text>
-                    <Text style = { styles.card }>🃓</Text>
-                    <Text style = { styles.card }>🃔</Text>
-                    <Text style = { styles.card }>🃕</Text>
-                    <Text style = { styles.card }>🃖</Text>
-                    <Text style = { styles.card }>🃗</Text>
-                    <Text style = { styles.card }>🃘</Text>
-                    <Text style = { styles.card }>🃙</Text>
-                    <Text style = { styles.card }>🃚</Text>
-                    <Text style = { styles.card }>🃛</Text>
-                    <Text style = { styles.card }>🃝</Text>
-                    <Text style = { styles.card }>🃞</Text>
+    {
+        icon: '🂵',
+        number: '5',
+        suit: 'Hearts'
+    },
 
-                </View>
-          
-            </ScrollView>
-        );
+    {
+        icon: '🂶',
+        number: '6',
+        suit: 'Hearts'
+    },
 
-    }
-};
+    {
+        icon: '🂷',
+        number: '7',
+        suit: 'Hearts'
+    },
+
+    {
+        icon: '🂸',
+        number: '8',
+        suit: 'Hearts'
+    },
+
+    {
+        icon: '🂹',
+        number: '9',
+        suit: 'Hearts'
+    },
+
+    {
+        icon: '🂺',
+        number: '10',
+        suit: 'Hearts'
+    },
+
+    {
+        icon: '🂻',
+        number: 'Jack',
+        suit: 'Hearts'
+    },
+
+    {
+        icon: '🂽',
+        number: 'Queen',
+        suit: 'Hearts'
+    },
+
+    {
+        icon: '🂾',
+        number: 'King',
+        suit: 'Hearts'
+    },
+
+    // Diamonds
+    {
+        icon: '🃁',
+        number: 'Ace',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃂',
+        number: '2',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃃',
+        number: '3',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃄',
+        number: '4',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃅',
+        number: '5',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃆',
+        number: '6',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃇',
+        number: '7',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃈',
+        number: '8',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃉',
+        number: '9',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃊',
+        number: '10',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃋',
+        number: 'Jack',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃍',
+        number: 'Queen',
+        suit: 'Diamonds'
+    },
+
+    {
+        icon: '🃎',
+        number: 'King',
+        suit: 'Diamonds'
+    },
+
+    // Clubs
+    {
+        icon: '🃑',
+        number: 'Ace',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃒',
+        number: '2',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃓',
+        number: '3',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃔',
+        number: '4',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃕',
+        number: '5',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃖',
+        number: '6',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃗',
+        number: '7',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃘',
+        number: '8',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃙',
+        number: '9',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃚',
+        number: '10',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃛',
+        number: 'Jack',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃝',
+        number: 'Queen',
+        suit: 'Clubs'
+    },
+
+    {
+        icon: '🃞',
+        number: 'King',
+        suit: 'Clubs'
+    },
+
+];
+
+// export default SortedDeck;
+export default SortedDeck;

@@ -4,15 +4,16 @@ const styles = StyleSheet.create({
 
     container: {
 
-        flex: 5,
+        flex: 0,
         backgroundColor: 'white',
         alignItems: 'center',
+        paddingBottom: 100 
 
     },
 
     title: {
 
-        flex: 2,
+        flex: 1,
         fontSize: 30,
         padding: 20
 
@@ -20,33 +21,41 @@ const styles = StyleSheet.create({
 
     game: {
 
-        flex:1,
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        flex: 0,
         borderWidth: 2,
         borderColor: 'black',
         width: 400,
-
+        padding: 10,
+        marginBottom: 20 
     },
 
     gameTitle: {
-        flex: 1,
+        flex: 0,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingTop: 10,
+        paddingBottom: 10,
+        fontWeight: 'bold'
     },
 
     titleItem: {
-        fontSize: 20,
-        flex: 1,
-        width: 100,
-        justifyContent: 'space-evenly'
+        flex: 0,
+        width: 'auto',
+        fontSize: 23,
+        fontWeight: 'bold'
     },
 
     description: {
 
-        flex: 1
+        flex: 0
 
+    },
+
+    playButton: {
+        fontSize: 15,
+        padding: 10,
+        color: 'red'
     },
 
     card: {

@@ -1,5 +1,6 @@
 import React , { Component } from 'react';
-import { Text, View, Image, AsyncStorage, TextInput } from 'react-native';
+import { Text, View, Image, AsyncStorage } from 'react-native';
+import { Link } from 'react-router-native';
 
 // Styles
 import styles from '../Styles/HomeStyles';
@@ -33,7 +34,9 @@ export default class Home extends Component {
 
                 { this.state.name === null ? (
 
-                   <Text style = { styles.title }>No Data</Text>
+                    <Link to = '/EgyptionRatScrew'>
+                        <Text style = { styles.title }>No Data</Text>
+                    </Link>
 
                 ) : ( 
 
