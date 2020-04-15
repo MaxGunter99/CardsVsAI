@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, Animated, Slider, Button } from 'react-native';
 import sortedDeck from '../CardList';
 import { Icon } from 'react-native-elements';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 
 // Styles
@@ -30,7 +30,7 @@ export default class EgyptionRatScrew extends Component {
 
         // Fade animation values
         fadeAnimation: new Animated.Value( 1 ),
-        slideUpAnimation: new Animated.Value( 30 ),
+        slideUpAnimation: new Animated.Value( 10 ),
 
         // swipe test
         statusMessage: 'waiting',
@@ -151,16 +151,27 @@ export default class EgyptionRatScrew extends Component {
             const animationDuration = 500
     
             Animated.timing(this.state.slideUpAnimation, {
-                toValue: 478,
+                toValue: 442,
                 duration: animationDuration,
             }).start();
     
             await sleep( animationDuration )
-    
-            Animated.timing(this.state.slideUpAnimation, {
-                toValue: 30,
-                duration: 0,
-            }).start();
+
+            if ( this.state.playersCards[0].length <= 1 ) {
+
+                Animated.timing(this.state.slideUpAnimation, {
+                    toValue: -10000,
+                    duration: 0,
+                }).start();
+
+            } else {
+
+                Animated.timing(this.state.slideUpAnimation, {
+                    toValue: 10,
+                    duration: 0,
+                }).start();
+
+            }
     
             if ( this.state.playersCards[0].length >= 1 ) {
     
@@ -204,11 +215,6 @@ export default class EgyptionRatScrew extends Component {
                 await this.slap()
             }
 
-            if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
-                alert( 'FACE CARD' )
-                return 
-            }
-
             this.state.stack.push( this.state.playersCards[ x ][0] )
             this.setState({ statusMessage: `Player ${ x } placed ${this.state.playersCards[ x ][0].number} ${this.state.playersCards[ x ][0].suit }` })
             this.state.playersCards[ x ].shift()
@@ -216,6 +222,11 @@ export default class EgyptionRatScrew extends Component {
             
             let player = this.state.playersTurn
             this.setState({ playersTurn: player + 1 })
+
+            if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+                alert( 'FACE CARD' )
+                return 
+            }
 
         } 
 
@@ -237,6 +248,7 @@ export default class EgyptionRatScrew extends Component {
         await sleep( 1000 )
         this.setState({ slap: false })
         alert( 'continue' )
+
     }
     
     render() {
@@ -272,6 +284,20 @@ export default class EgyptionRatScrew extends Component {
 
                         </View>
 
+                        { this.state.playersCards[0].length <= 1 ? (
+
+                            <>
+                                <Text style = {{ position: 'absolute' , bottom: 100 }}>No Cards Left</Text>
+                                <Animated.Text style = {{ fontSize: 200 ,position: 'absolute', bottom: this.state.slideUpAnimation, backgroundColor: 'white'    }}>{ this.state.back }</Animated.Text>
+                            </>
+
+                        ) : (
+                            <>
+                                <Text style = {{ fontSize: 200, position: 'absolute', bottom: 10, backgroundColor: 'white' }}>{ this.state.back }</Text> 
+                                <Animated.Text style = {{ fontSize: 200 ,position: 'absolute', bottom: this.state.slideUpAnimation, backgroundColor: 'white'    }}>{ this.state.back }</Animated.Text>
+                            </>
+                        ) }
+
                         <GestureRecognizer
                             onSwipeUp={ () => this.onSwipeUp() }
                             config={ config }
@@ -281,38 +307,11 @@ export default class EgyptionRatScrew extends Component {
                                 height: 250,
                                 width: 300,
                                 position: 'absolute',
-                                bottom: 20
+                                bottom: 20,
+                                // backgroundColor: 'red'
 
                             }}
                         ></GestureRecognizer>
-
-                        { this.state.playersCards[0].length === 0 ? (
-
-                            <Text style = {{ position: 'absolute' , bottom: 100 }}>No Cards Left</Text>
-
-                        ) : (
-                            <>
-                                <Text style = {{ fontSize: 200, position: 'absolute', bottom: 0, backgroundColor: 'white' }}>{ this.state.back }</Text>
-                                <Animated.View style = {
-                                    { 
-                                        flex: 0,
-                                        alignItems: 'center',
-                                        alignSelf: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: 200, 
-                                        height: 157, 
-                                        width: 122 ,
-                                        position: 'absolute', 
-                                        bottom: this.state.slideUpAnimation, 
-                                        backgroundColor: 'white' , 
-                                        borderColor: 'black' , 
-                                        borderWidth: 0 
-                                    }
-                                }>
-                                    <Text style = {{ fontSize: 200 , right: 6  }}>{ this.state.back }</Text>
-                                </Animated.View>
-                            </>
-                        ) }
 
                     </View>
 
