@@ -1,5 +1,5 @@
 // Sorted card deck
-const SortedDeck = [
+const sortedDeck = [
 
     // Spades
     {
@@ -319,5 +319,4 @@ const SortedDeck = [
 
 ];
 
-// export default SortedDeck;
-export default SortedDeck;
+export default sortedDeck;
