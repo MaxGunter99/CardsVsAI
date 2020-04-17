@@ -31,7 +31,7 @@ export default class EgyptionRatScrew extends Component {
         // Fade animation values
         fadeAnimation: new Animated.Value( 1 ),
         slideUpAnimation: new Animated.Value( 10 ),
-        sleepDuration: 500,
+        sleepDuration: 0,
 
         // swipe test
         statusMessage: 'waiting',
@@ -361,6 +361,7 @@ export default class EgyptionRatScrew extends Component {
         if ( cardsLeft.length === 1 ) {
             this.setState({ statusMessage: `Player ${ cardsLeft[0] } Wins!` })
             await this.sleep( 5000 )
+            this.setState({ playersTurn: cardsLeft[0] })
             return
         }
 
@@ -683,6 +684,7 @@ export default class EgyptionRatScrew extends Component {
         if ( this.state.split ===  false) {
             await this.sleep( this.state.sleepDuration )
             this.setState({ statusMessage: `Player ${ this.state.placedCard } wins, nobody has any cards`})
+            this.setState({ playersTurn: this.state.placedCard })
             return
 
         } else {
@@ -731,6 +733,7 @@ export default class EgyptionRatScrew extends Component {
     
                             } else {
                                 this.setState({ statusMessage: `Player ${this.state.playersTurn} wins!` })
+                                this.setState({ playersTurn: this.state.playersTurn })
                             }
 
                             return
@@ -762,8 +765,8 @@ export default class EgyptionRatScrew extends Component {
                                 split: false
                             })
 
-                            this.setState({ playersTurn: this.state.splitPlayer })
                             this.state.playersCards[ this.state.splitPlayer ].shift()
+                            this.setState({ playersTurn: this.state.splitPlayer })
 
                             return this.handleFaceCard()
 
@@ -785,30 +788,26 @@ export default class EgyptionRatScrew extends Component {
 
                     this.setState({ statusMessage: `Player: ${ this.state.splitPlayer } ran out of cards! ${ this.state.placedCard } gets the deck` })
                     await this.sleep( this.state.sleepDuration )
-    
-                    for ( var x = 0; x < this.state.stack.length; x++ ) {
+
+                    for ( x in this.state.stack ) {
                         this.state.playersCards[ this.state.placedCard ].push( this.state.stack[x] )
                     }
-
-                    // for ( x in this.state.stack ) {
-                    //     this.state.playersCards[ this.state.placedCard ].push( this.state.stack[x] )
-                    // }
     
                     await this.sleep( this.state.sleepDuration )
     
                     if ( this.state.placedCard === 0 ) {
                         this.setState({ playersTurn: 0, statusMessage: 'Your turn' })
                     } else {
-                        this.setState({ playersTurn: this.state.placedCard - 1 })
+                        this.setState({ playersTurn: this.state.placedCard })
                         return this.AITurn()
                     }
 
                 } else {
 
-                    this.setState({ statusMessage: `Player: ${ this.state.splitPlayer } placed a ${ this.state.playersCards[ this.state.splitPlayer ][0].number } , ${ this.state.playersCards[ this.state.splitPlayer ][0].suit }, so he does not make it out. Player ${ this.state.placedCard } gets the deck` })
+                    this.setState({ statusMessage: `Player: ${ this.state.splitPlayer } does not make it out. Player ${ this.state.placedCard } gets the deck` })
                     await this.sleep( this.state.sleepDuration )
-    
-                    for ( var x = 0; x < this.state.stack.length; x++ ) {
+
+                    for ( x in this.state.stack ) {
                         this.state.playersCards[ this.state.placedCard ].push( this.state.stack[x] )
                     }
     
@@ -818,6 +817,7 @@ export default class EgyptionRatScrew extends Component {
                     if ( this.state.playersTurn === 0 ) {
                         this.setState({ statusMessage: `Your turn` })
                     } else {
+                        this.setState({ playersTurn: this.state.placedCard - 1 })
                         return this.AITurn()
                     }
                 }             
@@ -844,7 +844,7 @@ export default class EgyptionRatScrew extends Component {
             await this.sleep( this.state.sleepDuration )
             
             for ( var i = 0; i < this.state.stack.length; i++ ) {
-                this.state.playersCards[ placedCard ].push( this.state.stack[0] )
+                this.state.playersCards[ placedCard ].push( this.state.stack[i] )
             }
         
             await this.sleep( this.state.sleepDuration )
