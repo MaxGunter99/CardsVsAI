@@ -23,7 +23,7 @@ export default class GameList extends Component {
                     id: 1,
                     title: 'Egyption Rat Screw',
                     gameLink: '/EgyptionRatScrew',
-                    players: '2',
+                    players: '2-10',
                     rules: [ 
     
                         {
@@ -94,7 +94,7 @@ export default class GameList extends Component {
                         <Text style = { styles.titleItem }>{x.title}</Text> 
                         <View style = {{ flex: 0, justifyContent: 'center', flexDirection: 'row', alignContent: 'center' }}>
                             <Text style = { styles.titleItem }>{x.players}</Text>
-                            <Icon name="md-person-add" underlayColor = {'black'} type="ionicon" color = 'black' size = { 30 } onPress = { this.toggleSlideAnimation }/>
+                            <Icon name="md-person" underlayColor = {'black'} type="ionicon" color = 'black' size = { 30 } onPress = { this.toggleSlideAnimation }/>
                         </View>
 
                     </View>

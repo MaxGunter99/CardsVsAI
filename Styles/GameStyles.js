@@ -13,14 +13,15 @@ const styles = StyleSheet.create({
     },
 
     info: {
-        flex: 0,
-        flexWrap: 'wrap',
+        // flex: 0,
+        // flexWrap: 'wrap',
+        // flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'absolute' , 
         width: 400,
-        height: 100,
-        top: 50,
+        // height: 100,
+        top: 0,
         backgroundColor: 'white',
     },
 
@@ -28,23 +29,27 @@ const styles = StyleSheet.create({
         flex: 0,
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        width: 400,
+        width: 80,
     },
 
     player: {
+        flex: 0,
+        alignItems: 'center',
         padding: 10,
-        borderRadius: 100,
+        borderRadius: 10,
         borderWidth: 3,
-        borderColor: 'black'
+        borderColor: 'black',
+        marginBottom: 10,
     },
 
     activePlayer: {
+        flex: 0,
+        alignItems: 'center',
         padding: 10,
-        backgroundColor: 'black',
-        color: 'white',
-        borderRadius: 100,
+        borderRadius: 10,
         borderWidth: 3,
-        borderColor: 'black'
+        borderColor: 'red',
+        marginBottom: 10,
     },
 
     gameContainer: {
@@ -72,7 +77,8 @@ const styles = StyleSheet.create({
     },
 
     stack: {
-        marginTop: -300,
+        marginTop: -100,
+        position: 'absolute'
     },
     
     card: {
