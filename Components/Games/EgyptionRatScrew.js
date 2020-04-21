@@ -185,8 +185,13 @@ export default class EgyptionRatScrew extends Component {
 
             let chances = this.state.numberOfCardsToPlace - this.state.cardsPlaced.length
             let cardsToGo =  chances - 1
-            this.state.stack.push( this.state.playersCards[ this.state.playersTurn ][0] )
-            this.state.cardsPlaced.push( this.state.playersCards[ this.state.playersTurn ][0] )
+
+            if ( this.state.slap === false ) {
+
+                this.state.stack.push( this.state.playersCards[ this.state.playersTurn ][0] )
+                this.state.cardsPlaced.push( this.state.playersCards[ this.state.playersTurn ][0] )
+
+            }
 
             if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
 
@@ -330,7 +335,7 @@ export default class EgyptionRatScrew extends Component {
 
             }
     
-            if ( this.state.playersCards[0].length >= 1 ) {
+            if ( this.state.playersCards[0].length >= 1 && this.state.slap === false ) {
     
                 this.state.stack.push( this.state.playersCards[0][0] )
                 this.setState({ statusMessage: `You placed a ${ this.state.playersCards[0][0].number } ${ this.state.playersCards[0][0].suit }`, playerSlappedValid: false  })
@@ -341,15 +346,17 @@ export default class EgyptionRatScrew extends Component {
                 // Face Cards
                 if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
 
-                    return this.handleFaceCard()
+                    this.handleFaceCard()
+                    return
     
                 } else {
 
-                    return this.AITurn()
+                    this.AITurn()
+                    return
                         
                 }
     
-            } else {
+            } else if ( this.state.playersCards[0].length === 0 && this.state.slap === false ) {
 
                 this.setState({ statusMessage: `You have no cards left, skipping you but you can slap in` })
                 await this.sleep( this.state.sleepDuration )
@@ -381,10 +388,17 @@ export default class EgyptionRatScrew extends Component {
         }
 
         if ( cardsLeft.length === 1 ) {
+
             for ( var x = 0; x < this.state.stack.length; x++ ) {
-                this.state.playersCards[ cardsLeft[0].push( this.state.stack[x] ) ]
+                this.state.playersCards[ cardsLeft[0] ].push( this.state.stack[x] )
             }
-            this.setState({ statusMessage: `AI ${ cardsLeft[0] } wins!` , stack: [] })
+
+            if ( cardsLeft[0] === 0 ) {
+                this.setState({ statusMessage: `You win!` , stack: [] })
+            } else {
+
+                this.setState({ statusMessage: `AI ${ cardsLeft[0] } wins!` , stack: [] })
+            }
             await this.sleep( 5000 )
             this.setState({ playersTurn: cardsLeft[0] })
             return
@@ -397,33 +411,36 @@ export default class EgyptionRatScrew extends Component {
 
         for ( var x = this.state.playersTurn; x < this.state.playersCards.length; x++ ) {
 
+            await this.sleep( this.state.sleepDuration )
+
             if ( this.state.slap === true ) {
 
                 await this.slapDeck()
-                alert( 'BLOOP' )
+                
+                if ( this.state.playerSlappedValid === true ) {
+
+                    return
+
+                }
       
             }
-            
-            if ( this.state.playerSlappedValid === true ) {
-                return
-            }
 
-            if ( this.state.playersCards[ x ].length === 0 ) {
+            if ( this.state.playersCards[ x ].length === 0 && this.state.slap === false ) {
 
-                if ( this.state.playersTurn === this.state.playersCards.length - 1 ) {
+                if ( this.state.playersTurn === this.state.playersCards.length - 1 && this.state.slap === false ) {
 
                     await this.returnNextPlayerMoves()
 
-                } else {
+                } else if ( this.state.slap === false ) {
 
                     return this.AITurn()
 
                 }
 
 
-            } else {
+            } else if ( this.state.slap === false ) {
 
-                const side = Math.floor( Math.random() * 2 )
+                const side = Math.floor( this.state.playersTurn % 2 )
 
                 // From Left
                 if ( side === 0 ) {
@@ -436,31 +453,47 @@ export default class EgyptionRatScrew extends Component {
 
                 }
 
-                Animated.timing(this.state.AISlideAnimation, {
-                    toValue: 140,
-                    duration: this.state.animationDuration,
-                }).start();
+                if ( this.state.slap === false ) {
 
-                await this.sleep( this.state.animationDuration )
+                    Animated.timing(this.state.AISlideAnimation, {
+                        toValue: 140,
+                        duration: this.state.animationDuration,
+                    }).start();
+    
+                    await this.sleep( this.state.animationDuration )
+    
+                    Animated.timing(this.state.AISlideAnimation, {
+                        toValue: -200,
+                        duration: 0,
+                    }).start();
+    
+                    this.state.stack.push( this.state.playersCards[ x ][0] )
+                    this.setState({ statusMessage: `AI ${ x } placed ${ this.state.playersCards[ x ][0].number } ${ this.state.playersCards[ x ][0].suit }` })
+                    this.state.playersCards[ x ].shift()
 
-                Animated.timing(this.state.AISlideAnimation, {
-                    toValue: -200,
-                    duration: 0,
-                }).start();
-
-                this.state.stack.push( this.state.playersCards[ x ][0] )
-                this.setState({ statusMessage: `AI ${ x } placed ${ this.state.playersCards[ x ][0].number } ${ this.state.playersCards[ x ][0].suit }` })
-                this.state.playersCards[ x ].shift()
+                }
 
                 // await this.sleep( Math.floor(Math.random() * 50) + 1000 )
                 await this.sleep( this.state.sleepDuration )
+
+                if ( this.state.slap === true ) {
+
+                    await this.slapDeck()
+                    
+                    if ( this.state.playerSlappedValid === true ) {
+    
+                        return
+                        
+                    }
+          
+                }
             
                 // Face Cards
-                if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+                if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards && this.state.slap === false ) {
 
                     return this.handleFaceCard()
 
-                } else {
+                } else if ( this.state.slap === false ) {
 
                     this.returnNextPlayerMoves()
 
@@ -469,14 +502,14 @@ export default class EgyptionRatScrew extends Component {
             }
         }
 
-        if ( this.state.playersCards[0].length === 0 ) {
+        if ( this.state.playersCards[0].length === 0 && this.state.slap === false ) {
 
             // this.setState({ statusMessage: 'You have no cards left, skipping' })
             return this.AITurn()
                 
-        } else {
+        } else if ( this.state.slap === false ) {
 
-            if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+            if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards && this.state.slap === false ) {
 
                 this.setState({ 
                     playersTurn: 0,
@@ -485,7 +518,7 @@ export default class EgyptionRatScrew extends Component {
                     cardsPlaced: []
                 })
 
-            } else {
+            } else if ( this.state.slap === false ) {
 
                 this.setState({ playersTurn: 0, playerVSFaceCard: false })
 
@@ -498,22 +531,24 @@ export default class EgyptionRatScrew extends Component {
         if ( this.state.slap === true ) {
 
             await this.slapDeck()
-            alert( 'BLOOP' )
+            
+            if ( this.state.playerSlappedValid === true ) {
+
+                return
+            }
             
         }
-        
-        if ( this.state.playerSlappedValid === true ) {
-            return
-        }
 
-        if ( this.state.playersTurn === this.state.playersCards.length - 1 ) {
+        if ( this.state.playersTurn === this.state.playersCards.length - 1 && this.state.slap === false ) {
 
             this.setState({ playersTurn: 0 })
+            return
 
-        } else {
+        } else if ( this.state.slap === false ) {
 
             let next = this.state.playersTurn + 1
             this.setState({ playersTurn: next })
+            return
 
         }
     }
@@ -560,7 +595,22 @@ export default class EgyptionRatScrew extends Component {
 
             }
 
-            this.setState({ stack: [] , playersTurn: 0 , statusMessage: 'Your turn' })
+            if ( this.state.playersCards[0].length === 52 ) {
+
+                this.setState({ stack: [] , playersTurn: 0 , statusMessage: 'You Win!' })
+
+            }
+
+            this.setState({ 
+                stack: [] , 
+                playersTurn: 0 , 
+                statusMessage: 'Your turn', 
+                slap: false, 
+                playerVSFaceCard: false ,
+                split: false,
+                splitPlayer: 0, 
+                playerId: 0 , 
+            })
 
         } else {
 
@@ -569,17 +619,17 @@ export default class EgyptionRatScrew extends Component {
                 this.setState({ statusMessage: 'Invalid slap, you lose one card.' })
                 this.state.stack.unshift( this.state.playersCards[0][0] )
                 this.state.playersCards[0].shift()
+                this.setState({ slap: false })
 
             } else {
 
                 this.setState({ statusMessage: 'Invalid slap.' })
+                this.setState({ slap: false })
 
             }
 
         }
 
-        await this.sleep( 3000 )
-        this.setState({ slap: false , splitPlayer: 0, playerId: 0 })
         return
 
     }
@@ -588,13 +638,13 @@ export default class EgyptionRatScrew extends Component {
 
         await this.returnNextPlayerMoves()
 
-        if ( this.state.playersTurn === 0 ) {
+        if ( this.state.playersTurn === 0 && this.state.slap === false ) {
 
             var placedCard = this.state.playersCards.length - 1
             this.setState({ placedCard: this.state.playersCards.length - 1 })
             var playsFaceCard = this.state.playersTurn
 
-        } else {
+        } else if ( this.state.slap === false ) {
 
             var placedCard = this.state.playersTurn - 1
             this.setState({ placedCard: this.state.playersTurn - 1 })
@@ -602,7 +652,7 @@ export default class EgyptionRatScrew extends Component {
 
         }
 
-        if ( this.state.playersCards[ playsFaceCard ].length === 0 ) {
+        if ( this.state.playersCards[ playsFaceCard ].length === 0 && this.state.slap === false ) {
 
             return this.handleSplit( placedCard , playsFaceCard )
 
@@ -612,22 +662,22 @@ export default class EgyptionRatScrew extends Component {
         const playerGetsOut = []
 
         // if you placed it
-        if ( placedCard === 0 ) {
+        if ( placedCard === 0 && this.state.slap === false ) {
 
-            const side = Math.floor( Math.random() * 2 )
+            const side = Math.floor( playsFaceCard % 2 )
 
             for ( var x = 0; x < cardValue; x++ ) {
 
                 if ( this.state.slap === true ) {
 
                     await this.slapDeck()
-                    alert( 'BLOOP' )
+                    
+                    if ( this.state.playerSlappedValid === true ) {
+
+                        return
+                    }
         
                     
-                }
-                
-                if ( this.state.playerSlappedValid === true ) {
-                    return
                 }
 
                 if ( side === 0 ) {
@@ -641,6 +691,7 @@ export default class EgyptionRatScrew extends Component {
                 }
 
                 let chances = cardValue - x
+
                 if ( chances > 1 || chances === 0 ) {
 
                     this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chances` })
@@ -653,22 +704,38 @@ export default class EgyptionRatScrew extends Component {
             
                 await this.sleep( this.state.sleepDuration )
 
-                if ( playerGetsOut.length === 0 && this.state.slap === false) {
+                if ( playerGetsOut.length === 0 && this.state.slap === false ) {
 
-                    Animated.timing(this.state.AISlideAnimation, {
-                        toValue: 140,
-                        duration: this.state.animationDuration,
-                    }).start();
+                    if ( this.state.slap === true ) {
 
-                    await this.sleep( this.state.animationDuration )
+                        await this.slapDeck()
+                        
+                        if ( this.state.playerSlappedValid === true ) {
+        
+                            return
+                            
+                        }
+              
+                    }
 
-                    Animated.timing(this.state.AISlideAnimation, {
-                        toValue: -200,
-                        duration: 0,
-                    }).start();
+                    if ( this.state.slap === false ) {
 
-                    this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
-                    this.state.playersCards[ playsFaceCard ].shift()
+                        Animated.timing(this.state.AISlideAnimation, {
+                            toValue: 140,
+                            duration: this.state.animationDuration,
+                        }).start();
+    
+                        await this.sleep( this.state.animationDuration )
+    
+                        Animated.timing(this.state.AISlideAnimation, {
+                            toValue: -200,
+                            duration: 0,
+                        }).start();
+
+                        this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
+                        this.state.playersCards[ playsFaceCard ].shift()
+
+                    }
 
                     if ( this.state.playersCards[ playsFaceCard ].length === 0 ) {
 
@@ -687,11 +754,15 @@ export default class EgyptionRatScrew extends Component {
                 }
             }
 
-            this.handleDeck( placedCard , playsFaceCard , playerGetsOut )
+            if (this.state.slap === false ) {
+
+                this.handleDeck( placedCard , playsFaceCard , playerGetsOut )
+
+            }
 
 
         // the last person placed it and you have to face it
-        } else if ( placedCard === this.state.playersCards.length - 1 ) {
+        } else if ( placedCard === this.state.playersCards.length - 1 && this.state.slap === false ) {
 
             this.setState({ 
                 playersTurn: 0,
@@ -715,7 +786,7 @@ export default class EgyptionRatScrew extends Component {
             return
 
         // someone random placed it
-        } else {
+        } else if ( this.state.slap === false ) {
 
             if ( cardValue > 1 || cardValue === 0 ) {
 
@@ -736,7 +807,7 @@ export default class EgyptionRatScrew extends Component {
 
             }
 
-            const side = Math.floor( Math.random() * 2 )
+            const side = Math.floor( playsFaceCard % 2 )
 
             if ( side === 0 ) {
 
@@ -753,12 +824,12 @@ export default class EgyptionRatScrew extends Component {
                 if ( this.state.slap === true ) {
 
                     await this.slapDeck()
-                    alert( 'BLOOP' )
+                    
+                    if ( this.state.playerSlappedValid === true ) {
+
+                        return
+                    }
           
-                }
-                
-                if ( this.state.playerSlappedValid === true ) {
-                    return
                 }
 
                 // If the AI has not placed a face card yet
@@ -778,12 +849,12 @@ export default class EgyptionRatScrew extends Component {
                         if ( this.state.slap === true ) {
 
                             await this.slapDeck()
-                            alert( 'BLOOP' )
-                 
-                        }
+                            
+                            if ( this.state.playerSlappedValid === true ) {
 
-                        if ( this.state.playerSlappedValid === true ) {
-                            return
+                                return
+                            }
+                 
                         }
 
                         for ( var x = 0; x < this.state.stack.length; x++ ) {
@@ -800,7 +871,11 @@ export default class EgyptionRatScrew extends Component {
                         if ( this.state.slap === true ) {
 
                             await this.slapDeck()
-                            alert( 'BLOOP' )
+                            
+                            if ( this.state.playerSlappedValid === true ) {
+
+                                return
+                            }
                  
                         }
 
@@ -808,19 +883,24 @@ export default class EgyptionRatScrew extends Component {
                             return
                         }
 
-                        Animated.timing(this.state.AISlideAnimation, {
-                            toValue: 140,
-                            duration: this.state.animationDuration,
-                        }).start();
+                        if ( this.state.slap === false ) {
 
-                        await this.sleep( this.state.animationDuration )
+                            Animated.timing(this.state.AISlideAnimation, {
+                                toValue: 140,
+                                duration: this.state.animationDuration,
+                            }).start();
+    
+                            await this.sleep( this.state.animationDuration )
+    
+                            Animated.timing(this.state.AISlideAnimation, {
+                                toValue: -200,
+                                duration: 0,
+                            }).start();
+                
+                            this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
 
-                        Animated.timing(this.state.AISlideAnimation, {
-                            toValue: -200,
-                            duration: 0,
-                        }).start();
-            
-                        this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
+                        }
+
                         let chances = cardValue - x - 1
                                     
                         if ( chances > 1 ) {
@@ -835,6 +915,18 @@ export default class EgyptionRatScrew extends Component {
 
                         this.state.playersCards[ playsFaceCard ].shift()
                     }
+
+                    if ( this.state.slap === true ) {
+
+                        await this.slapDeck()
+                        
+                        if ( this.state.playerSlappedValid === true ) {
+        
+                            return
+                            
+                        }
+              
+                    }
             
                     // if they place a face card
                     if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
@@ -845,18 +937,11 @@ export default class EgyptionRatScrew extends Component {
                 }
             }
 
-            if ( this.state.slap === true ) {
+            if (this.state.slap === false ) {
 
-                await this.slapDeck()
-                alert( 'BLOOP' )
-    
-            }
-                    
-            if ( this.state.playerSlappedValid === true ) {
-                return
-            }
+                this.handleDeck( placedCard , playsFaceCard , playerGetsOut )
 
-            this.handleDeck( placedCard , playsFaceCard , playerGetsOut )
+            }
 
         }
 
@@ -866,29 +951,43 @@ export default class EgyptionRatScrew extends Component {
     
     handleSplit = async function( placedCard , playsFaceCard ) {
 
-        this.setState({ 
-            split: false,
-            // statusMessage: 'Splitting it up!',
-            // person who placed face card
-            placedCard: placedCard , 
-            // player who deals with face card
-            playerId: playsFaceCard 
-        })
+        if ( this.state.slap === true ) {
+
+            await this.slapDeck()
+            
+            if ( this.state.playerSlappedValid === true ) {
+
+                return
+
+            }
+ 
+        }
+
+        if ( this.state.slap === false ) {
+            this.setState({ 
+                split: false,
+                // statusMessage: 'Splitting it up!',
+                // person who placed face card
+                placedCard: placedCard , 
+                // player who deals with face card
+                playerId: playsFaceCard 
+            })
+        }
 
         for ( var x = 0; x < this.state.playersCards.length; x++ ) {
 
             if ( this.state.slap === true ) {
 
                 await this.slapDeck()
-                alert( 'BLOOP' )
+                
+                if ( this.state.playerSlappedValid === true ) {
+
+                    return
+                }
      
             }
 
-            if ( this.state.playerSlappedValid === true ) {
-                return
-            }
-
-            if ( this.state.split === false ) {
+            if ( this.state.split === false && this.state.slap === false ) {
 
                 if ( this.state.playersCards[ this.state.playerId ].length >= 1 ) {
 
@@ -902,7 +1001,7 @@ export default class EgyptionRatScrew extends Component {
                     })
                     break
 
-                } else {
+                } else if ( this.state.slap === false ) {
 
                     if ( this.state.playerId === this.state.playersCards.length - 1 ) {
 
@@ -919,18 +1018,18 @@ export default class EgyptionRatScrew extends Component {
             }
         }
 
-        if ( this.state.split === false) {
+        if ( this.state.split === false && this.state.slap === false ) {
 
             await this.sleep( this.state.sleepDuration )
             this.setState({ statusMessage: `AI ${ this.state.placedCard } wins, nobody has any cards`, playersTurn: this.state.placedCard})
             return
 
-        } else {
+        } else if ( this.state.slap === false ) {
 
             this.setState({ cardsPlaced: [] })
             await this.sleep( this.state.sleepDuration )
 
-            if ( this.state.splitPlayer === 0 ) {
+            if ( this.state.splitPlayer === 0 && this.state.slap === false ) {
 
                 this.setState({ 
                     statusMessage: `AI ${ this.state.placedCard } placed a face card , You have ${ this.state.cardValue - this.state.cardsPlaced } chances ` , 
@@ -941,7 +1040,7 @@ export default class EgyptionRatScrew extends Component {
                 })
                 return
 
-            } else {
+            } else if ( this.state.slap === false ) {
 
                 let chances = this.state.cardValue - this.state.cardsPlaced 
 
@@ -957,7 +1056,7 @@ export default class EgyptionRatScrew extends Component {
 
             }
 
-            const side = Math.floor( Math.random() * 2 )
+            const side = Math.floor( this.state.splitPlayer % 2 )
 
             if ( side === 0 ) {
 
@@ -975,17 +1074,18 @@ export default class EgyptionRatScrew extends Component {
                 if ( this.state.slap === true ) {
 
                     await this.slapDeck()
-                    alert( 'BLOOP' )
+
+                    if ( this.state.playerSlappedValid === true ) {
+
+                        return
+
+                    }
            
                 }
-                
-                if ( this.state.playerSlappedValid === true ) {
-                    return
-                }
 
-                if ( this.state.split === true ) {
+                if ( this.state.split === true && this.state.slap === false  ) {
                         
-                    if ( this.state.playersCards[ this.state.splitPlayer ].length === 0 ) {
+                    if ( this.state.playersCards[ this.state.splitPlayer ].length === 0 && this.state.slap === false ) {
                             
                         this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards. AI ${this.state.placedCard} gets the deck` , split: false })
                         await this.sleep( this.state.sleepDuration )
@@ -998,7 +1098,7 @@ export default class EgyptionRatScrew extends Component {
 
                         this.setState({ stack: [] , playersTurn: this.state.placedCard })
 
-                        if ( this.state.playersCards[ this.state.playersTurn ].length === 52 ) {
+                        if ( this.state.playersCards[ this.state.playersTurn ].length === 52 && this.state.slap === false ) {
 
                             if ( this.state.placedCard === 0 ) {
 
@@ -1012,13 +1112,13 @@ export default class EgyptionRatScrew extends Component {
 
                             return
 
-                        } else {
+                        } else if ( this.state.slap === false ) {
 
-                            if ( this.state.placedCard === 0 ) {
+                            if ( this.state.placedCard === 0 && this.state.slap === false ) {
 
                                 this.setState({ statusMessage: 'Your turn' , playersTurn: 0 })
         
-                            } else {
+                            } else if ( this.state.slap === false ) {
 
                                 this.setState({ playersTurn: this.state.placedCard - 1 })
                                 return this.AITurn()
@@ -1026,31 +1126,36 @@ export default class EgyptionRatScrew extends Component {
                             }
                         }
                             
-                    } else if ( this.state.playersCards[ this.state.splitPlayer ].length >= 1 ) {
-
-                        Animated.timing(this.state.AISlideAnimation, {
-                            toValue: 140,
-                            duration: this.state.animationDuration,
-                        }).start();
-
-                        await this.sleep( this.state.animationDuration )
-
-                        Animated.timing(this.state.AISlideAnimation, {
-                            toValue: -200,
-                            duration: 0,
-                        }).start();
+                    } else if ( this.state.playersCards[ this.state.splitPlayer ].length >= 1 && this.state.slap === false ) {
                             
-                        this.state.stack.push( this.state.playersCards[ this.state.splitPlayer ][0] )
-                        this.state.cardsPlaced.push( this.state.playersCards[ this.state.splitPlayer ][0] )
+                        if ( this.state.slap === false ) {
+
+                            Animated.timing(this.state.AISlideAnimation, {
+                                toValue: 140,
+                                duration: this.state.animationDuration,
+                            }).start();
+    
+                            await this.sleep( this.state.animationDuration )
+    
+                            Animated.timing(this.state.AISlideAnimation, {
+                                toValue: -200,
+                                duration: 0,
+                            }).start();
+
+                            this.state.stack.push( this.state.playersCards[ this.state.splitPlayer ][0] )
+                            this.state.cardsPlaced.push( this.state.playersCards[ this.state.splitPlayer ][0] )
+                            this.setState({ statusMessage: `AI ${ this.state.splitPlayer } placed a ${ this.state.playersCards[ this.state.splitPlayer ][0].number } ${ this.state.playersCards[ this.state.splitPlayer ][0].suit }` })
+
+                        }
                             
-                        if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+                        if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards && this.state.slap === false ) {
 
                             await this.sleep( this.state.sleepDuration )
                             this.state.playersCards[ this.state.splitPlayer ].shift()
                             this.setState({ statusMessage: `AI ${ this.state.splitPlayer } placed a face card!` , split: false, playersTurn: this.state.splitPlayer })
                             return this.handleFaceCard()
                             
-                        } else {
+                        } else if ( this.state.slap === false ) {
 
                             this.state.playersCards[ this.state.splitPlayer ].shift()
 
@@ -1062,24 +1167,13 @@ export default class EgyptionRatScrew extends Component {
 
             }
 
-            if ( this.state.slap === true ) {
+            if ( this.state.playersCards[ this.state.splitPlayer ] === 0 && this.state.slap === false ) {
 
-                await this.slapDeck()
-                alert( 'BLOOP' )
-                
-            }
-
-            if ( this.state.playerSlappedValid === true ) {
-                return
-            }
-
-            if ( this.state.playersCards[ this.state.splitPlayer ] === 0 ) {
-
-                if ( this.state.placedCard === 0 ) {
+                if ( this.state.placedCard === 0 && this.state.slap === false ) {
 
                     this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards! You get the deck` })
 
-                } else {
+                } else if ( this.state.slap === false ) {
 
                     this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards! AI ${ this.state.placedCard } gets the deck` })
 
@@ -1095,18 +1189,18 @@ export default class EgyptionRatScrew extends Component {
     
                 await this.sleep( this.state.sleepDuration )
     
-                if ( this.state.placedCard === 0 ) {
+                if ( this.state.placedCard === 0 && this.state.slap === false ) {
 
                     this.setState({ playersTurn: 0, statusMessage: 'Your turn' })
 
-                } else {
+                } else if ( this.state.slap === false ) {
 
                     this.setState({ playersTurn: this.state.placedCard })
                     return this.AITurn()
 
                 }
 
-            } else {
+            } else if ( this.state.slap === false ) {
 
                 this.setState({ statusMessage: `AI ${ this.state.splitPlayer } does not make it out. AI ${ this.state.placedCard } gets the deck` })
                 await this.sleep( this.state.sleepDuration )
@@ -1120,11 +1214,11 @@ export default class EgyptionRatScrew extends Component {
                 await this.sleep( this.state.sleepDuration )
                 this.setState({ stack: [] , playersTurn: this.state.placedCard })
     
-                if ( this.state.playersTurn === 0 ) {
+                if ( this.state.playersTurn === 0 && this.state.slap === false ) {
 
                     this.setState({ statusMessage: `Your turn` })
 
-                } else {
+                } else if ( this.state.slap === false ) {
 
                     this.setState({ playersTurn: this.state.placedCard - 1 })
                     return this.AITurn()
@@ -1139,29 +1233,30 @@ export default class EgyptionRatScrew extends Component {
         if ( this.state.slap === true ) {
 
             await this.slapDeck()
-            alert( 'BLOOP' )
+            
+            if ( this.state.playerSlappedValid === true ) {
 
-        }
+                return
 
-        if ( this.state.playerSlappedValid === true ) {
-            return
+            }
+
         }
 
         // if player against the face card places a face card
-        if ( playerGetsOut.length >= 1 ) {
+        if ( playerGetsOut.length >= 1 && this.state.slap === false ) {
 
             this.setState({ statusMessage: `AI ${ playsFaceCard } placed a face card!` })
             await this.sleep( this.state.sleepDuration )
             this.handleFaceCard()
                 
         // if player against the face card does not put down a face card
-        } else {
+        } else if ( this.state.slap === false ) {
 
-            if ( placedCard === 0 ) {
+            if ( placedCard === 0 && this.state.slap === false ) {
 
                 this.setState({ statusMessage: `AI ${ playsFaceCard } did not make it! You get the deck!` })
 
-            } else {
+            } else if ( this.state.slap === false ) {
 
                 this.setState({ statusMessage: `AI ${ playsFaceCard } did not make it! AI ${ placedCard } gets the deck!` })
 
@@ -1178,12 +1273,12 @@ export default class EgyptionRatScrew extends Component {
             await this.sleep( this.state.sleepDuration )
             this.setState({ stack: [] })
             
-            if ( placedCard === 0 ) {
+            if ( placedCard === 0 && this.state.slap === false ) {
 
                 this.setState({ playersTurn: placedCard })
                 this.setState({ statusMessage: `Your turn` })
 
-            } else {
+            } else if ( this.state.slap === false ) {
 
                 this.setState({ playersTurn: placedCard - 1 })
                 return this.AITurn()
@@ -1346,11 +1441,11 @@ export default class EgyptionRatScrew extends Component {
                                 <>
                                     { this.state.stack[ this.state.stack.length - 1 ].suit === 'Hearts' || this.state.stack[ this.state.stack.length - 1 ].suit === 'Diamonds' ? (
 
-                                        <Text style = {{ fontSize: 200, color: 'red' }} onPress = { () =>  this.slapDeck() }>{ this.state.stack[ this.state.stack.length - 1 ].icon }</Text>
+                                        <Text style = {{ fontSize: 200, color: 'red' }} onPress = { () =>  { if ( this.state.slap === false ) { this.slapDeck() } }}>{ this.state.stack[ this.state.stack.length - 1 ].icon }</Text>
 
                                     ) : (
 
-                                        <Text style = {{ fontSize: 200 }} onPress = { () =>  this.slapDeck() }>{ this.state.stack[ this.state.stack.length - 1 ].icon }</Text>
+                                        <Text style = {{ fontSize: 200 }} onPress = { () =>  { if ( this.state.slap === false ) { this.slapDeck() } }}>{ this.state.stack[ this.state.stack.length - 1 ].icon }</Text>
 
                                     ) }
                                 </>
