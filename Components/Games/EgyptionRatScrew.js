@@ -306,8 +306,6 @@ export default class EgyptionRatScrew extends Component {
             }
 
         } else if ( this.state.playersTurn === 0 && this.state.playerVSFaceCard === false || this.state.playerSlappedValid === true ) {
-
-            this.setState({ playerSlappedValid: false })
     
             Animated.timing(this.state.slideUpAnimation, {
                 toValue: 305,
@@ -335,7 +333,7 @@ export default class EgyptionRatScrew extends Component {
             if ( this.state.playersCards[0].length >= 1 ) {
     
                 this.state.stack.push( this.state.playersCards[0][0] )
-                this.setState({ statusMessage: `You placed a ${ this.state.playersCards[0][0].number } ${ this.state.playersCards[0][0].suit }` })
+                this.setState({ statusMessage: `You placed a ${ this.state.playersCards[0][0].number } ${ this.state.playersCards[0][0].suit }`, playerSlappedValid: false  })
                 this.state.playersCards[0].shift()
 
                 await this.sleep( this.state.sleepDuration )
@@ -343,8 +341,7 @@ export default class EgyptionRatScrew extends Component {
                 // Face Cards
                 if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
 
-                    this.handleFaceCard()
-                    return
+                    return this.handleFaceCard()
     
                 } else {
 
@@ -403,96 +400,95 @@ export default class EgyptionRatScrew extends Component {
             if ( this.state.slap === true ) {
 
                 await this.slapDeck()
-
+                alert( 'BLOOP' )
+      
+            }
+            
+            if ( this.state.playerSlappedValid === true ) {
+                return
             }
 
-            if ( this.state.playerSlappedValid === false && this.state.slap === false  ) {
+            if ( this.state.playersCards[ x ].length === 0 ) {
 
-                if ( this.state.playersCards[ x ].length === 0 ) {
+                if ( this.state.playersTurn === this.state.playersCards.length - 1 ) {
 
-                    if ( this.state.playersTurn === this.state.playersCards.length - 1 ) {
-
-                        await this.returnNextPlayerMoves()
-
-                    } else {
-
-                        return this.AITurn()
-
-                    }
-
+                    await this.returnNextPlayerMoves()
 
                 } else {
 
-                    const side = Math.floor( Math.random() * 2 )
-
-                    // From Left
-                    if ( side === 0 ) {
-
-                        this.setState({ AISlideDirection: 0 })
-
-                    } else {
-
-                        this.setState({ AISlideDirection: 1 })
-
-                    }
-
-                    Animated.timing(this.state.AISlideAnimation, {
-                        toValue: 140,
-                        duration: this.state.animationDuration,
-                    }).start();
-
-                    await this.sleep( this.state.animationDuration )
-
-                    Animated.timing(this.state.AISlideAnimation, {
-                        toValue: -200,
-                        duration: 0,
-                    }).start();
-
-                    this.state.stack.push( this.state.playersCards[ x ][0] )
-                    this.setState({ statusMessage: `AI ${ x } placed ${ this.state.playersCards[ x ][0].number } ${ this.state.playersCards[ x ][0].suit }` })
-                    this.state.playersCards[ x ].shift()
-
-                    // await this.sleep( Math.floor(Math.random() * 50) + 1000 )
-                    await this.sleep( this.state.sleepDuration )
-            
-                    // Face Cards
-                    if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
-
-                        return this.handleFaceCard()
-
-                    } else {
-
-                        this.returnNextPlayerMoves()
-
-                    }
+                    return this.AITurn()
 
                 }
-            }
-        } 
 
-        if ( this.state.playerSlappedValid === false && this.state.slap === false  ) {
 
-            if ( this.state.playersCards[0].length === 0 ) {
-
-                // this.setState({ statusMessage: 'You have no cards left, skipping' })
-                return this.AITurn()
-                
             } else {
 
-                if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+                const side = Math.floor( Math.random() * 2 )
 
-                    this.setState({ 
-                        playersTurn: 0,
-                        playerVSFaceCard: true,
-                        numberOfCardsToPlace: this.state.faceCards[ this.state.stack[ this.state.stack.length - 1 ].number ],
-                        cardsPlaced: []
-                    })
+                // From Left
+                if ( side === 0 ) {
+
+                    this.setState({ AISlideDirection: 0 })
 
                 } else {
 
-                    this.setState({ playersTurn: 0, playerVSFaceCard: false })
+                    this.setState({ AISlideDirection: 1 })
 
                 }
+
+                Animated.timing(this.state.AISlideAnimation, {
+                    toValue: 140,
+                    duration: this.state.animationDuration,
+                }).start();
+
+                await this.sleep( this.state.animationDuration )
+
+                Animated.timing(this.state.AISlideAnimation, {
+                    toValue: -200,
+                    duration: 0,
+                }).start();
+
+                this.state.stack.push( this.state.playersCards[ x ][0] )
+                this.setState({ statusMessage: `AI ${ x } placed ${ this.state.playersCards[ x ][0].number } ${ this.state.playersCards[ x ][0].suit }` })
+                this.state.playersCards[ x ].shift()
+
+                // await this.sleep( Math.floor(Math.random() * 50) + 1000 )
+                await this.sleep( this.state.sleepDuration )
+            
+                // Face Cards
+                if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+
+                    return this.handleFaceCard()
+
+                } else {
+
+                    this.returnNextPlayerMoves()
+
+                }
+
+            }
+        }
+
+        if ( this.state.playersCards[0].length === 0 ) {
+
+            // this.setState({ statusMessage: 'You have no cards left, skipping' })
+            return this.AITurn()
+                
+        } else {
+
+            if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+
+                this.setState({ 
+                    playersTurn: 0,
+                    playerVSFaceCard: true,
+                    numberOfCardsToPlace: this.state.faceCards[ this.state.stack[ this.state.stack.length - 1 ].number ],
+                    cardsPlaced: []
+                })
+
+            } else {
+
+                this.setState({ playersTurn: 0, playerVSFaceCard: false })
+
             }
         }
     }
@@ -502,21 +498,23 @@ export default class EgyptionRatScrew extends Component {
         if ( this.state.slap === true ) {
 
             await this.slapDeck()
-
+            alert( 'BLOOP' )
+            
+        }
+        
+        if ( this.state.playerSlappedValid === true ) {
+            return
         }
 
-        if ( this.state.playerSlappedValid === false && this.state.slap === false  ) {
+        if ( this.state.playersTurn === this.state.playersCards.length - 1 ) {
 
-            if ( this.state.playersTurn === this.state.playersCards.length - 1 ) {
+            this.setState({ playersTurn: 0 })
 
-                this.setState({ playersTurn: 0 })
+        } else {
 
-            } else {
+            let next = this.state.playersTurn + 1
+            this.setState({ playersTurn: next })
 
-                let next = this.state.playersTurn + 1
-                this.setState({ playersTurn: next })
-
-            }
         }
     }
 
@@ -581,7 +579,7 @@ export default class EgyptionRatScrew extends Component {
         }
 
         await this.sleep( 3000 )
-        this.setState({ slap: false })
+        this.setState({ slap: false , splitPlayer: 0, playerId: 0 })
         return
 
     }
@@ -623,7 +621,13 @@ export default class EgyptionRatScrew extends Component {
                 if ( this.state.slap === true ) {
 
                     await this.slapDeck()
-
+                    alert( 'BLOOP' )
+        
+                    
+                }
+                
+                if ( this.state.playerSlappedValid === true ) {
+                    return
                 }
 
                 if ( side === 0 ) {
@@ -636,52 +640,49 @@ export default class EgyptionRatScrew extends Component {
 
                 }
 
-                if ( this.state.playerSlappedValid === false && this.state.slap === false  ) {
+                let chances = cardValue - x
+                if ( chances > 1 || chances === 0 ) {
 
-                    let chances = cardValue - x
-                    if ( chances > 1 || chances === 0 ) {
+                    this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chances` })
 
-                        this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chances` })
+                } else {
 
-                    } else {
+                    this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chance` })
 
-                        this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chance` })
+                }
+            
+                await this.sleep( this.state.sleepDuration )
 
+                if ( playerGetsOut.length === 0 && this.state.slap === false) {
+
+                    Animated.timing(this.state.AISlideAnimation, {
+                        toValue: 140,
+                        duration: this.state.animationDuration,
+                    }).start();
+
+                    await this.sleep( this.state.animationDuration )
+
+                    Animated.timing(this.state.AISlideAnimation, {
+                        toValue: -200,
+                        duration: 0,
+                    }).start();
+
+                    this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
+                    this.state.playersCards[ playsFaceCard ].shift()
+
+                    if ( this.state.playersCards[ playsFaceCard ].length === 0 ) {
+
+                        this.setState({ statusMessage: `AI ${ playsFaceCard } has no cards left, You get the deck` })
+                        break
+            
                     }
             
-                    await this.sleep( this.state.sleepDuration )
+                    // if they place a face card
+                    if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
 
-                    if ( playerGetsOut.length === 0 && this.state.slap === false) {
+                        playerGetsOut.push('success')
+                        break
 
-                        Animated.timing(this.state.AISlideAnimation, {
-                            toValue: 140,
-                            duration: this.state.animationDuration,
-                        }).start();
-
-                        await this.sleep( this.state.animationDuration )
-
-                        Animated.timing(this.state.AISlideAnimation, {
-                            toValue: -200,
-                            duration: 0,
-                        }).start();
-
-                        this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
-                        this.state.playersCards[ playsFaceCard ].shift()
-
-                        if ( this.state.playersCards[ playsFaceCard ].length === 0 ) {
-
-                            this.setState({ statusMessage: `AI ${ playsFaceCard } has no cards left, You get the deck` })
-                            break
-            
-                        }
-            
-                        // if they place a face card
-                        if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
-
-                            playerGetsOut.push('success')
-                            break
-
-                        }
                     }
                 }
             }
@@ -690,7 +691,7 @@ export default class EgyptionRatScrew extends Component {
 
 
         // the last person placed it and you have to face it
-        } else if ( placedCard === this.state.playersCards.length - 1 && this.state.playerSlappedValid === false && this.state.slap === false  ) {
+        } else if ( placedCard === this.state.playersCards.length - 1 ) {
 
             this.setState({ 
                 playersTurn: 0,
@@ -752,67 +753,107 @@ export default class EgyptionRatScrew extends Component {
                 if ( this.state.slap === true ) {
 
                     await this.slapDeck()
-
+                    alert( 'BLOOP' )
+          
+                }
+                
+                if ( this.state.playerSlappedValid === true ) {
+                    return
                 }
 
-                if ( this.state.playerSlappedValid === false && this.state.slap === false  ) {
+                // If the AI has not placed a face card yet
+                if ( playerGetsOut.length === 0 ) {
 
-                    if ( playerGetsOut.length === 0 ) {
-            
+                    await this.sleep( this.state.sleepDuration )
+
+                    if ( this.state.playersCards[ playsFaceCard ].length === 0  && x > 0 && this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+
+                        playerGetsOut.push('success')
+
+                    } else if ( this.state.playersCards[ playsFaceCard ].length === 0 ) {
+
+                        this.setState({ placedCard: playsFaceCard , statusMessage: `AI ${ playsFaceCard } has no cards left. AI ${ placedCard } gets the deck.` })
                         await this.sleep( this.state.sleepDuration )
-            
-                        if ( this.state.playersCards[ playsFaceCard ].length === 0 ) {
 
-                            this.setState({ placedCard: playsFaceCard , statusMessage: `AI ${ playsFaceCard } has no cards left. AI ${ placedCard } gets the deck.` })
-                            await this.sleep( this.state.sleepDuration )
+                        if ( this.state.slap === true ) {
 
-                            for ( var x = 0; x < this.state.stack.length; x++ ) {
+                            await this.slapDeck()
+                            alert( 'BLOOP' )
+                 
+                        }
 
-                                this.state.playersCards[ placedCard ].push( this.state.stack[ x ] )
+                        if ( this.state.playerSlappedValid === true ) {
+                            return
+                        }
 
-                            }
+                        for ( var x = 0; x < this.state.stack.length; x++ ) {
 
-                            this.setState({ stack: [] , playersTurn: placedCard - 1 })
-                            return this.AITurn()
+                            this.state.playersCards[ placedCard ].push( this.state.stack[ x ] )
+
+                        }
+
+                        this.setState({ stack: [] , playersTurn: placedCard - 1 })
+                        return this.AITurn()
                 
+                    } else {
+
+                        if ( this.state.slap === true ) {
+
+                            await this.slapDeck()
+                            alert( 'BLOOP' )
+                 
+                        }
+
+                        if ( this.state.playerSlappedValid === true ) {
+                            return
+                        }
+
+                        Animated.timing(this.state.AISlideAnimation, {
+                            toValue: 140,
+                            duration: this.state.animationDuration,
+                        }).start();
+
+                        await this.sleep( this.state.animationDuration )
+
+                        Animated.timing(this.state.AISlideAnimation, {
+                            toValue: -200,
+                            duration: 0,
+                        }).start();
+            
+                        this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
+                        let chances = cardValue - x - 1
+                                    
+                        if ( chances > 1 ) {
+
+                            this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chances` })
+
                         } else {
 
-                            Animated.timing(this.state.AISlideAnimation, {
-                                toValue: 140,
-                                duration: this.state.animationDuration,
-                            }).start();
-
-                            await this.sleep( this.state.animationDuration )
-
-                            Animated.timing(this.state.AISlideAnimation, {
-                                toValue: -200,
-                                duration: 0,
-                            }).start();
-            
-                            this.state.stack.push( this.state.playersCards[ playsFaceCard ][ 0 ] )
-                            let chances = cardValue - x - 1
-                                    
-                            if ( chances > 1 ) {
-
-                                this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chances` })
-
-                            } else {
-
-                                this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chance` })
-
-                            }
-
-                            this.state.playersCards[ playsFaceCard ].shift()
-                        }
-            
-                        // if they place a face card
-                        if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
-
-                            playerGetsOut.push('success')
+                            this.setState({ statusMessage: `AI ${ playsFaceCard } has ${ chances } chance` })
 
                         }
+
+                        this.state.playersCards[ playsFaceCard ].shift()
+                    }
+            
+                    // if they place a face card
+                    if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+
+                        playerGetsOut.push('success')
+
                     }
                 }
+            }
+
+            if ( this.state.slap === true ) {
+
+                await this.slapDeck()
+                alert( 'BLOOP' )
+    
+            }
+                    
+            if ( this.state.playerSlappedValid === true ) {
+                return
             }
 
             this.handleDeck( placedCard , playsFaceCard , playerGetsOut )
@@ -825,28 +866,29 @@ export default class EgyptionRatScrew extends Component {
     
     handleSplit = async function( placedCard , playsFaceCard ) {
 
-        if ( this.state.playerSlappedValid === false && this.state.slap === false  ) {
-
-            this.setState({ 
-                split: false,
-                // statusMessage: 'Splitting it up!',
-                // person who placed face card
-                placedCard: placedCard , 
-                // player who deals with face card
-                playerId: playsFaceCard 
-            })
-
-        }
+        this.setState({ 
+            split: false,
+            // statusMessage: 'Splitting it up!',
+            // person who placed face card
+            placedCard: placedCard , 
+            // player who deals with face card
+            playerId: playsFaceCard 
+        })
 
         for ( var x = 0; x < this.state.playersCards.length; x++ ) {
 
             if ( this.state.slap === true ) {
 
                 await this.slapDeck()
-
+                alert( 'BLOOP' )
+     
             }
 
-            if ( this.state.split === false && this.state.slap === false ) {
+            if ( this.state.playerSlappedValid === true ) {
+                return
+            }
+
+            if ( this.state.split === false ) {
 
                 if ( this.state.playersCards[ this.state.playerId ].length >= 1 ) {
 
@@ -933,157 +975,163 @@ export default class EgyptionRatScrew extends Component {
                 if ( this.state.slap === true ) {
 
                     await this.slapDeck()
-
+                    alert( 'BLOOP' )
+           
+                }
+                
+                if ( this.state.playerSlappedValid === true ) {
+                    return
                 }
 
-                if ( this.state.playerSlappedValid === false && this.state.slap === false ) {
-
-                    if ( this.state.split === true ) {
+                if ( this.state.split === true ) {
                         
-                        if ( this.state.playersCards[ this.state.splitPlayer ].length === 0 ) {
+                    if ( this.state.playersCards[ this.state.splitPlayer ].length === 0 ) {
                             
-                            this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards. AI ${this.state.placedCard} gets the deck` , split: false })
-                            
-                            await this.sleep( this.state.sleepDuration )
+                        this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards. AI ${this.state.placedCard} gets the deck` , split: false })
+                        await this.sleep( this.state.sleepDuration )
 
-                            for ( var x = 0; x < this.state.stack.length; x++ ) {
+                        for ( var x = 0; x < this.state.stack.length; x++ ) {
 
-                                this.state.playersCards[ this.state.placedCard ].push( this.state.stack[ x ] )
+                            this.state.playersCards[ this.state.placedCard ].push( this.state.stack[ x ] )
 
-                            }
+                        }
 
-                            this.setState({ stack: [] , playersTurn: this.state.placedCard })
+                        this.setState({ stack: [] , playersTurn: this.state.placedCard })
 
-                            if ( this.state.playersCards[ this.state.playersTurn ].length === 52 ) {
+                        if ( this.state.playersCards[ this.state.playersTurn ].length === 52 ) {
 
-                                if ( this.state.placedCard === 0 ) {
+                            if ( this.state.placedCard === 0 ) {
 
-                                    this.setState({ statusMessage: 'You win!' })
+                                this.setState({ statusMessage: 'You win!' })
         
-                                } else {
-
-                                    this.setState({ statusMessage: `AI ${this.state.playersTurn} wins!` , playersTurn: this.state.playersTurn })
-
-                                }
-
-                                return
-
                             } else {
 
-                                if ( this.state.placedCard === 0 ) {
+                                this.setState({ statusMessage: `AI ${this.state.playersTurn} wins!` , playersTurn: this.state.playersTurn })
 
-                                    this.setState({ statusMessage: 'Your turn' , playersTurn: 0 })
+                            }
+
+                            return
+
+                        } else {
+
+                            if ( this.state.placedCard === 0 ) {
+
+                                this.setState({ statusMessage: 'Your turn' , playersTurn: 0 })
         
-                                } else {
+                            } else {
 
-                                    this.setState({ playersTurn: this.state.placedCard - 1 })
-                                    return this.AITurn()
-
-                                }
+                                this.setState({ playersTurn: this.state.placedCard - 1 })
+                                return this.AITurn()
 
                             }
+                        }
                             
-                        } else if ( this.state.playersCards[ this.state.splitPlayer ].length >= 1 ) {
+                    } else if ( this.state.playersCards[ this.state.splitPlayer ].length >= 1 ) {
 
-                            Animated.timing(this.state.AISlideAnimation, {
-                                toValue: 140,
-                                duration: this.state.animationDuration,
-                            }).start();
+                        Animated.timing(this.state.AISlideAnimation, {
+                            toValue: 140,
+                            duration: this.state.animationDuration,
+                        }).start();
 
-                            await this.sleep( this.state.animationDuration )
+                        await this.sleep( this.state.animationDuration )
 
-                            Animated.timing(this.state.AISlideAnimation, {
-                                toValue: -200,
-                                duration: 0,
-                            }).start();
+                        Animated.timing(this.state.AISlideAnimation, {
+                            toValue: -200,
+                            duration: 0,
+                        }).start();
                             
-                            this.state.stack.push( this.state.playersCards[ this.state.splitPlayer ][0] )
-                            this.state.cardsPlaced.push( this.state.playersCards[ this.state.splitPlayer ][0] )
-                            // this.setState({ statusMessage: `AI ${ this.state.splitPlayer } placed a ${ this.state.playersCards[ this.state.splitPlayer ][0].number } , ${ this.state.playersCards[ this.state.splitPlayer ][0].suit }` })
+                        this.state.stack.push( this.state.playersCards[ this.state.splitPlayer ][0] )
+                        this.state.cardsPlaced.push( this.state.playersCards[ this.state.splitPlayer ][0] )
+                            
+                        if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+
+                            await this.sleep( this.state.sleepDuration )
                             this.state.playersCards[ this.state.splitPlayer ].shift()
+                            this.setState({ statusMessage: `AI ${ this.state.splitPlayer } placed a face card!` , split: false, playersTurn: this.state.splitPlayer })
+                            return this.handleFaceCard()
                             
-                            if ( this.state.stack[ this.state.stack.length - 1 ].number in this.state.faceCards ) {
+                        } else {
 
-                                await this.sleep( this.state.sleepDuration )
-                                this.setState({ statusMessage: `AI ${ this.state.splitPlayer } placed a face card!` , split: false, playersTurn: this.state.splitPlayer })
-                                return this.handleFaceCard()
+                            this.state.playersCards[ this.state.splitPlayer ].shift()
 
-                            }
-                            
                         }
                     }
-
                 }
 
                 await this.sleep( this.state.sleepDuration )
 
             }
 
-            if ( this.state.split === true && this.state.playerSlappedValid === false && this.state.slap === false ) {
+            if ( this.state.slap === true ) {
 
-                if ( this.state.playersCards[ this.state.splitPlayer ] === 0 ) {
+                await this.slapDeck()
+                alert( 'BLOOP' )
+                
+            }
 
-                    if ( this.state.placedCard === 0 ) {
+            if ( this.state.playerSlappedValid === true ) {
+                return
+            }
 
-                        this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards! You get the deck` })
+            if ( this.state.playersCards[ this.state.splitPlayer ] === 0 ) {
 
-                    } else {
+                if ( this.state.placedCard === 0 ) {
 
-                        this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards! AI ${ this.state.placedCard } gets the deck` })
-
-                    }
-
-                    await this.sleep( this.state.sleepDuration )
-
-                    for ( x in this.state.stack ) {
-
-                        this.state.playersCards[ this.state.placedCard ].push( this.state.stack[x] )
-
-                    }
-    
-                    await this.sleep( this.state.sleepDuration )
-    
-                    if ( this.state.placedCard === 0 ) {
-
-                        this.setState({ playersTurn: 0, statusMessage: 'Your turn' })
-
-                    } else {
-
-                        this.setState({ playersTurn: this.state.placedCard })
-                        return this.AITurn()
-
-                    }
+                    this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards! You get the deck` })
 
                 } else {
 
-                    this.setState({ statusMessage: `AI ${ this.state.splitPlayer } does not make it out. AI ${ this.state.placedCard } gets the deck` })
-                    await this.sleep( this.state.sleepDuration )
+                    this.setState({ statusMessage: `AI ${ this.state.splitPlayer } ran out of cards! AI ${ this.state.placedCard } gets the deck` })
 
-                    for ( x in this.state.stack ) {
+                }
 
-                        this.state.playersCards[ this.state.placedCard ].push( this.state.stack[x] )
+                await this.sleep( this.state.sleepDuration )
 
-                    }
+                for ( x in this.state.stack ) {
+
+                    this.state.playersCards[ this.state.placedCard ].push( this.state.stack[x] )
+
+                }
     
-                    await this.sleep( this.state.sleepDuration )
-                    this.setState({ stack: [] , playersTurn: this.state.placedCard })
+                await this.sleep( this.state.sleepDuration )
     
-                    if ( this.state.playersTurn === 0 ) {
+                if ( this.state.placedCard === 0 ) {
 
-                        this.setState({ statusMessage: `Your turn` })
+                    this.setState({ playersTurn: 0, statusMessage: 'Your turn' })
 
-                    } else {
+                } else {
 
-                        this.setState({ playersTurn: this.state.placedCard - 1 })
-                        return this.AITurn()
+                    this.setState({ playersTurn: this.state.placedCard })
+                    return this.AITurn()
 
-                    }
+                }
+
+            } else {
+
+                this.setState({ statusMessage: `AI ${ this.state.splitPlayer } does not make it out. AI ${ this.state.placedCard } gets the deck` })
+                await this.sleep( this.state.sleepDuration )
+
+                for ( x in this.state.stack ) {
+
+                    this.state.playersCards[ this.state.placedCard ].push( this.state.stack[x] )
+
+                }
+    
+                await this.sleep( this.state.sleepDuration )
+                this.setState({ stack: [] , playersTurn: this.state.placedCard })
+    
+                if ( this.state.playersTurn === 0 ) {
+
+                    this.setState({ statusMessage: `Your turn` })
+
+                } else {
+
+                    this.setState({ playersTurn: this.state.placedCard - 1 })
+                    return this.AITurn()
+
                 }             
-
             }
-
         }
-
     }
 
     handleDeck = async function( placedCard , playsFaceCard , playerGetsOut ) {
@@ -1091,58 +1139,57 @@ export default class EgyptionRatScrew extends Component {
         if ( this.state.slap === true ) {
 
             await this.slapDeck()
+            alert( 'BLOOP' )
 
         }
 
-        if ( this.state.playerSlappedValid === false && this.state.slap === false ) {
+        if ( this.state.playerSlappedValid === true ) {
+            return
+        }
 
-            // if player against the face card places a face card
-            if ( playerGetsOut.length >= 1 ) {
+        // if player against the face card places a face card
+        if ( playerGetsOut.length >= 1 ) {
 
-                this.setState({ statusMessage: `AI ${ playsFaceCard } placed a face card!` })
-                await this.sleep( this.state.sleepDuration )
-                this.handleFaceCard()
+            this.setState({ statusMessage: `AI ${ playsFaceCard } placed a face card!` })
+            await this.sleep( this.state.sleepDuration )
+            this.handleFaceCard()
                 
-            // if player against the face card does not put down a face card
+        // if player against the face card does not put down a face card
+        } else {
+
+            if ( placedCard === 0 ) {
+
+                this.setState({ statusMessage: `AI ${ playsFaceCard } did not make it! You get the deck!` })
+
             } else {
 
-                if ( placedCard === 0 ) {
+                this.setState({ statusMessage: `AI ${ playsFaceCard } did not make it! AI ${ placedCard } gets the deck!` })
 
-                    this.setState({ statusMessage: `AI ${ playsFaceCard } did not make it! You get the deck!` })
-
-                } else {
-
-                    this.setState({ statusMessage: `AI ${ playsFaceCard } did not make it! AI ${ placedCard } gets the deck!` })
-
-                }
-
-                await this.sleep( this.state.sleepDuration )
-                
-                for ( var i = 0; i < this.state.stack.length; i++ ) {
-
-                    this.state.playersCards[ placedCard ].push( this.state.stack[i] )
-
-                }
-            
-                await this.sleep( this.state.sleepDuration )
-                this.setState({ stack: [] })
-            
-                if ( placedCard === 0 ) {
-
-                    this.setState({ playersTurn: placedCard })
-                    this.setState({ statusMessage: `Your turn` })
-
-                } else {
-
-                    this.setState({ playersTurn: placedCard - 1 })
-                    return this.AITurn()
-
-                }
-            
             }
 
+            await this.sleep( this.state.sleepDuration )
+                
+            for ( var i = 0; i < this.state.stack.length; i++ ) {
+
+                this.state.playersCards[ placedCard ].push( this.state.stack[i] )
+
+            }
+            
+            await this.sleep( this.state.sleepDuration )
+            this.setState({ stack: [] })
+            
+            if ( placedCard === 0 ) {
+
+                this.setState({ playersTurn: placedCard })
+                this.setState({ statusMessage: `Your turn` })
+
+            } else {
+
+                this.setState({ playersTurn: placedCard - 1 })
+                return this.AITurn()
+            
+            }
         }
-    
     }
 
     mapPlayersTurn = () => {
